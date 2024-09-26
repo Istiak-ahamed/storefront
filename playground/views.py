@@ -1,13 +1,23 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.db import transaction
+from store.models import Order, OrderItem, Product, Customer, Collection
 
-
-def calculate():
-    x = 1
-    y = 2
-    return x
 
 
 def say_hello(request):
-    x = calculate()
-    return render(request, 'hello.html', {'name': 'Mosh'})
+    with transaction.atomic():
+        order = Order()
+        order.customer_id = 1
+        order.save()
+
+        item = OrderItem()
+        item.order = order
+        item.product_id = 1
+        item.quantity = 1
+        item.unit_price = 10
+        item.save()
+    
+    return render(request, 'hello.html', {
+        'name': 'Mosh',
+        # 'tags': query_set
+        })
